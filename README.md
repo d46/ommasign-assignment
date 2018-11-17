@@ -1,5 +1,20 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Preparing
+Open empty tab on chrome and dev tools. Then virtualize screen with `cmd+shift+m` and make a new resolution with `1920x1080`. After virtualizing resolution, refresh your empty tab then navigate localhost.
+
+## Definition
+It's a simple menuboard engine mvp to generate boards dynamically. There is two type input to create animations.
+ - Custom react components ( support advanced animation techniques )
+ - Predefined elements and its actions from JSON file ( Might be generated from another tool )
+
+Under the `services/mocks/page0.js` is an example for predefined actions. Others are an example for custom react components.
+
+For further approaches we can fetch animations from service which is dynamically generated on server.
+
+## Service Worker
+It's allow us to run our app offline. Came up with react-scripts.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -26,16 +41,6 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 ## Learn More
 
