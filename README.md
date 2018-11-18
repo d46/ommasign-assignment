@@ -58,7 +58,7 @@ For further approaches we can fetch animations from api which is dynamically gen
       },
 
       // Second action will execute when duration at 2sec
-      // Also it allow us to calculation positions with size of element
+      // Also it allow us to calcualte positions with size of element
       {
       action: 'add',
       target: 'be53a0541a6d36f6ecb879fa2c584b08',
@@ -80,7 +80,7 @@ For further approaches we can fetch animations from api which is dynamically gen
 ```
 
 ## Preparing 
-Open empty tab on chrome and open dev toolsand do not open localhost(Chrome bug). On the dev tools section toggle device toolbar with `cmd+shift+m` and make a new resolution with `1920x1080` or set when responsive. After virtualizing resolution, refresh your empty tab then navigate localhost.
+Open empty tab on chrome and open dev tools. Do not open localhost(Chrome bug). On the dev tools section toggle device toolbar with `cmd+shift+m` and make a new resolution with `1920x1080` or set when responsive. After virtualizing resolution, refresh your empty tab then navigate localhost.
 
 ## Service Worker
 It's allow us to run our app offline. Came up with react-scripts.
