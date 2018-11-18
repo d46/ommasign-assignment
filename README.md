@@ -1,16 +1,86 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Preparing
-Open empty tab on chrome and dev tools. Then virtualize screen with `cmd+shift+m` and make a new resolution with `1920x1080`. After virtualizing resolution, refresh your empty tab then navigate localhost.
+## Menuboard Engine
+It's a simple menuboard engine to generate boards dynamically. Used React to generate DOM and for animations Animejs included.
 
-## Definition
-It's a simple menuboard engine mvp to generate boards dynamically. There is two type input to create animations.
- - Custom react components ( support advanced animation techniques )
+Two type input figured to create animations.
+ - Custom react components ( support advance animation techniques )
  - Predefined elements and its actions from JSON file ( Might be generated from another tool )
 
-Under the `services/mocks/page0.js` is an example for predefined actions. Others are an example for custom react components.
+Under the `examples/pages/page0.js` is an example for predefined actions. Others are an example for custom react components.
 
-For further approaches we can fetch animations from service which is dynamically generated on server.
+For further approaches we can fetch animations from api which is dynamically generated on server.
+
+#### Structure
+```
+{
+  page: 'Page 1', // Page name
+  nextPage: (next) => setTimeout(next, 2000), // Middle function on nextPage
+  scene: {
+    elements: [] // Elements will generate by react,
+    actions: [] // Animations will execute on selected elements by animejs
+  } 
+}
+```
+
+#### Example Usage
+```
+{
+  page: 'Page 1',
+  nextPage: (next) => setTimeout(next, 2000), 
+  scene: {
+    elements: [{
+      type: 'Image',
+      name: 'Hello World',
+      content: 'Hello World'
+      id: 'be53a0541a6d36f6ecb879fa2c584b08',
+      style: {
+        display: 'inline',
+        position: 'absolute',
+      }
+    }]
+    actions: [
+    // Set initial position at duration 1 (Duration is a time on timeline) 
+      {
+        action: 'add',
+        target: 'be53a0541a6d36f6ecb879fa2c584b08',
+        data: ({ targets, positionInfo }) => {
+          const {
+            height
+          } = positionInfo;
+          return {
+            targets,
+            translateX: 950,
+            translateY: -height,
+            duration: 1,
+          }
+        }
+      },
+
+      // Second action will execute when duration at 2sec
+      // Also it allow us to calculation positions with size of element
+      {
+      action: 'add',
+      target: 'be53a0541a6d36f6ecb879fa2c584b08',
+      data: ({ targets, positionInfo }) => {
+        const {
+          height
+        } = positionInfo;
+        return {
+          targets,
+          translateX: 950,
+          translateY: (window.innerHeight / 2) - (height / 2),
+          duration: 2000,
+        }
+      }
+    }
+    ]
+  } 
+}
+```
+
+## Preparing 
+Open empty tab on chrome and open dev toolsand do not open localhost(Chrome bug). On the dev tools section toggle device toolbar with `cmd+shift+m` and make a new resolution with `1920x1080` or set when responsive. After virtualizing resolution, refresh your empty tab then navigate localhost.
 
 ## Service Worker
 It's allow us to run our app offline. Came up with react-scripts.

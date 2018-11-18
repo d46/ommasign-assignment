@@ -1,37 +1,64 @@
 import React, { Component } from 'react';
-import './App.css';
-import * as PageService from '../../services/pages';
+import './Menuboard.css';
 import Composer from '../Composer/Composer';
 import Logger from '../../utils/logger';
+import * as easings from '../../utils/easings';
+import anime from 'animejs';
 
-class App extends Component {
+class Menuboard extends Component {
 
   state = {
     pages: [],
     currentPage: 0,
-    lastPage: false
+    lastPageFetched: false
   }
 
-  async componentDidMount() {
-    // Fetch first page
-    await this.fetchPage(0);
+  componentDidMount() {
+    this.loadEasings();
+    this.initialFetch();
   }
 
-  fetchPage = async (number) => {
+  async initialFetch() {
+    const {
+      pages
+    } = this.props;
+    // If received pages from props skip fetching
+    if (pages.length > 0) {
+      this.setState({
+        pages,
+        lastPageFetched: true
+      });
+    } else {
+      await this.fetchPage(0);
+    }
+  }
+
+  loadEasings() {
+    // Set extended easing animations
+    for (let easing in easings) {
+      anime.easings[easing] = easings[easing];
+    }
+  }
+
+  fetchPage = async (pageIndex) => {
     const {
       pages,
     } = this.state;
-    const page = await PageService.getPage(number);
-    this.setState({
-      pages: [...pages, page]
-    });
+    const page = await this.props.nextPage(pageIndex)
+      .catch(error => Logger.error(error));
+
+    if (page.hasOwnProperty('page') && page.hasOwnProperty('nextPage') && page.hasOwnProperty('scene')) {
+      this.setState({
+        pages: [...pages, page]
+      });
+    }
   }
 
   next = async () => {
     let {
       currentPage,
       pages,
-      lastPage
+      lastPageFetched
     } = this.state;
 
     try {
@@ -40,7 +67,7 @@ class App extends Component {
       // When server returns Error we reset count
 
       // Fetch pages lazy and increase
-      if ( !lastPage ) {
+      if (!lastPageFetched) {
         await this.fetchPage(currentPage + 1);
         ++currentPage
         this.setState({
@@ -48,7 +75,7 @@ class App extends Component {
         });
       } else {
         // Reset currentPage exceed pages length
-        if ( currentPage + 1 >= pages.length) {
+        if (currentPage + 1 >= pages.length) {
           // Refresh component trick
           // TODO: Find better approach
           setTimeout(() => {
@@ -64,17 +91,25 @@ class App extends Component {
           });
         }
       }
-      
-    } catch(e) {
+
+    } catch (e) {
       // When page limit is Execeed start looping witouth fetching
       this.setState({
-        lastPage: true
+        lastPageFetched: true
       });
       this.next();
       Logger.warn({
         message: 'Next page not found'
       })
     }
+  }
+
+  getTimeline() {
+    // Create timeline instance
+    const timeline = anime.timeline();
+
+    // Set timeline instance to the state
+    return timeline;
   }
 
   render() {
@@ -84,12 +119,13 @@ class App extends Component {
     } = this.state;
 
     return (
-      <div className="App">
+      <div className="Menuboard">
         {
-          pages.length > 0 && pages.map((page, index) => <Composer 
+          pages.length > 0 && pages.map((page, index) => <Composer
             key={index}
             page={page}
-            actionsFinished={this.next}
+            next={this.next}
+            timeline={this.getTimeline()}
           />).filter((page, index) => index === currentPage)
         }
       </div>
@@ -97,4 +133,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Menuboard;

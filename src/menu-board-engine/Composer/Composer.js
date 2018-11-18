@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import './Composer.css';
-import anime from 'animejs'
 import Logger from '../../utils/logger';
 import PropTypes from 'prop-types';
 import ElementFactory from './elements';
-import * as easings from '../../utils/easings';
 
 class Composer extends Component {
   state = {
@@ -18,21 +16,13 @@ class Composer extends Component {
   }
 
   async componentWillMount() {
-    const {
-      page,
-      user
-    } = this.props;
-
+    
     try {
-      // Generate timeline
-      await this.generateTimeline();
-
       // Generate scene
-      await this.generateScene(page);
+      await this.generateElements();
 
     } catch (e) {
       Logger.error({
-        user,
         message: e
       });
     }
@@ -41,8 +31,17 @@ class Composer extends Component {
   async componentDidMount() {
     const {
       page,
-      user
+      timeline
     } = this.props;
+    // Set a callback to Timeline
+    // Calls actionsFinished with in the nexPage middleware
+    timeline.finished.then(() => {
+      console.log("Next animation")
+      page.nextPage(
+        this.props.next
+      )
+    });
+
     try {
       // Start actions
       setTimeout(()=> {
@@ -55,53 +54,21 @@ class Composer extends Component {
       }, 100);
     } catch(e) {
       Logger.error({
-        user,
         message: e
       });
     }
   }
 
-  async generateTimeline() {
+
+  async generateElements() {
     const {
-      page
-    } = this.props;
-    // Create timeline instance
-    const timeline = anime.timeline();
-    // Set extended easing animations
-    for(let easing in easings) {
-      anime.easings[easing] = easings[easing];
-    }
-
-    // Set a callback to Timeline
-    // Calls actionsFinished with in the nexPage middleware
-    timeline.finished.then(() => {
-      console.log("Next animation")
-      page.nextPage(
-        this.props.actionsFinished
-      )
-    });
-
-    // Set timeline instance to the state
-    this.setState({
-      timeline
-    });
-  }
-
-  async generateScene(page) {
-    const {
-      scene
-    } = page;
-    return await this.generateElements(scene);
-  }
-
-  async generateElements(scene) {
-    const {
-      user
+      page: {
+        scene
+      },
     } = this.props;
 
     if ( !scene.hasOwnProperty('elements') && scene.elements.length > 0 ) {
       return Logger.error({
-        user,
         message: 'Generate Scene - Has no elements'
       });
     }
@@ -153,15 +120,11 @@ class Composer extends Component {
 
   async startActions(scene) {
     const {
-      user
-    } = this.props;
-    const {
       timeline
-    } = this.state;
+    } = this.props;
 
     if ( !scene.hasOwnProperty('actions') ) {
       return Logger.error({
-        user,
         message: 'Generate Scene - Has no actions'
       });
     }
@@ -186,9 +149,11 @@ class Composer extends Component {
   render() {
     const {
       elementStack,
-      showScene,
-      timeline
+      showScene
     } = this.state;
+    const {
+      timeline
+    } = this.props;
 
     const elementStackKeys = Object.keys(elementStack);
     return (
@@ -219,7 +184,6 @@ class Composer extends Component {
 
 Composer.propTypes = {
   actionsFinished: PropTypes.func,
-  user: PropTypes.object,
   page: PropTypes.object
 }
 
